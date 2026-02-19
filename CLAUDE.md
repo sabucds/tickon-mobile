@@ -27,6 +27,7 @@ You are an experienced, pragmatic software engineer. Prefer simple solutions. Av
 - If you’re about to make a big architectural choice, STOP and write an ADR in `docs/adr/`.
 
 ## Progressive disclosure (read only when relevant)
+- `docs/agent/project-context.md` — project context from business point of view
 - `docs/agent/workflow.md` — how we run “architect/implementer” loops and chunk work
 - `docs/agent/flutter-playbook.md` — Flutter basics, folder conventions, common patterns
 - `docs/agent/testing.md` — test strategy and how to validate changes

@@ -52,7 +52,7 @@ class _LoginFormState extends State<LoginForm> {
         AppTextField(
           key: const Key('login_email_field'),
           controller: _emailController,
-          label: 'Email',
+          label: 'Email or username',
           hint: 'you@example.com',
           errorText: _emailError,
           keyboardType: TextInputType.emailAddress,
