@@ -11,3 +11,17 @@ class ServerFailure extends AuthFailure {
 
   final String message;
 }
+
+class DuplicateEmail extends AuthFailure {
+  const DuplicateEmail();
+}
+
+class DuplicateUsername extends AuthFailure {
+  const DuplicateUsername();
+}
+
+class ValidationFailure extends AuthFailure {
+  const ValidationFailure(this.errors);
+
+  final Map<String, String> errors;
+}

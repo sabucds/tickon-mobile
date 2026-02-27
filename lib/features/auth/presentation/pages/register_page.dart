@@ -5,45 +5,50 @@ import '../../../../../core/ui/tokens/app_typography.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/failures/auth_failure.dart';
 import '../../domain/usecases/sign_in.dart';
-import '../cubit/login_cubit.dart';
-import '../cubit/login_state.dart';
-import '../widgets/login_form.dart';
-import 'register_page.dart';
+import '../../domain/usecases/sign_up.dart';
+import '../cubit/register_cubit.dart';
+import '../cubit/register_state.dart';
+import '../widgets/register_form.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final repository = AuthRepositoryImpl();
     return BlocProvider(
-      create: (_) => LoginCubit(SignIn(AuthRepositoryImpl())),
-      child: const LoginView(),
+      create: (_) => RegisterCubit(
+        signUpUseCase: SignUp(repository),
+        signInUseCase: SignIn(repository),
+      ),
+      child: const RegisterView(),
     );
   }
 }
 
 /// Public so it can be wrapped with a mock cubit in tests.
-class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+class RegisterView extends StatelessWidget {
+  const RegisterView({super.key});
 
   String _failureMessage(AuthFailure failure) => switch (failure) {
-        InvalidCredentials() => 'Invalid email or password',
-        ServerFailure(:final message) => message,
         DuplicateEmail() => 'Email already exists',
         DuplicateUsername() => 'Username already taken',
-        ValidationFailure() => 'Validation failed',
+        ValidationFailure(:final errors) => errors.values.first,
+        ServerFailure(:final message) => message,
+        _ => 'Registration failed',
       };
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit, LoginState>(
+    return BlocListener<RegisterCubit, RegisterState>(
       listener: (context, state) {
         switch (state) {
-          case LoginSuccess(:final user):
+          case RegisterSuccess(:final user):
+            Navigator.of(context).pushReplacementNamed('/home');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Welcome, ${user.name}!')),
             );
-          case LoginFailure(:final failure):
+          case RegisterFailure(:final failure):
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(_failureMessage(failure)),
@@ -63,32 +68,30 @@ class LoginView extends StatelessWidget {
               children: [
                 const SizedBox(height: AppSpacing.x12),
                 Text(
-                  'Welcome back',
+                  'Create Account',
                   style: AppTypography.displaySm,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Sign in to your account',
+                  'Sign up to get started',
                   style: AppTypography.bodyMd,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.x8),
-                const LoginForm(),
+                const RegisterForm(),
                 const SizedBox(height: AppSpacing.x6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Don\'t have an account? ',
+                      'Already have an account? ',
                       style: AppTypography.bodyMd,
                     ),
                     TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const RegisterPage()),
-                      ),
+                      onPressed: () => Navigator.of(context).pop(),
                       child: Text(
-                        'Sign Up',
+                        'Sign In',
                         style: AppTypography.labelMd.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
