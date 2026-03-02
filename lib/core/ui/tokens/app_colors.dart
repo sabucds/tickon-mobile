@@ -21,6 +21,10 @@ abstract final class AppColors {
   static const Color error   = Color(0xFFDC2626);
   static const Color warning = Color(0xFFD97706);
 
+  // --- Brand gradient (from Figma) ---
+  static const Color gradientStart = Color(0xFF667EEA);
+  static const Color gradientEnd   = Color(0xFF764BA2);
+
   // --- Semantic aliases ---
   static const Color background    = neutral50;
   static const Color surface       = neutral0;

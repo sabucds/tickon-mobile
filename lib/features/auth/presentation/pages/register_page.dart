@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../core/ui/tokens/app_colors.dart';
 import '../../../../../core/ui/tokens/app_spacing.dart';
-import '../../../../../core/ui/tokens/app_typography.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/failures/auth_failure.dart';
 import '../../domain/usecases/sign_in.dart';
 import '../../domain/usecases/sign_up.dart';
 import '../cubit/register_cubit.dart';
 import '../cubit/register_state.dart';
+import '../widgets/auth_header.dart';
 import '../widgets/register_form.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -60,45 +61,39 @@ class RegisterView extends StatelessWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: AppColors.surface,
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.x6),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppSpacing.x12),
-                Text(
-                  'Create Account',
-                  style: AppTypography.displaySm,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                Text(
-                  'Sign up to get started',
-                  style: AppTypography.bodyMd,
-                  textAlign: TextAlign.center,
-                ),
+                const SizedBox(height: AppSpacing.x8),
+                const AuthHeader(subtitle: 'Create your account'),
                 const SizedBox(height: AppSpacing.x8),
                 const RegisterForm(),
                 const SizedBox(height: AppSpacing.x6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Already have an account? ',
-                      style: AppTypography.bodyMd,
+                      style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const Text(
                         'Sign In',
-                        style: AppTypography.labelMd.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.gradientStart,
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: AppSpacing.x8),
               ],
             ),
           ),

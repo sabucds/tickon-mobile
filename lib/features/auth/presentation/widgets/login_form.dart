@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/ui/atoms/app_button.dart';
-import '../../../../../core/ui/atoms/app_text_field.dart';
+import '../../../../../core/ui/atoms/gradient_button.dart';
+import '../../../../../core/ui/tokens/app_colors.dart';
 import '../../../../../core/ui/tokens/app_spacing.dart';
+import '../../../../../core/ui/tokens/app_typography.dart';
 import '../cubit/login_cubit.dart';
 import '../cubit/login_state.dart';
+import 'auth_input_field.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -49,38 +51,146 @@ class _LoginFormState extends State<LoginForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AppTextField(
+        AuthInputField(
           key: const Key('login_email_field'),
+          label: 'Email',
           controller: _emailController,
-          label: 'Email or username',
-          hint: 'you@example.com',
+          hint: 'your.email@example.com',
           errorText: _emailError,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          leading: const Icon(Icons.email_outlined),
           enabled: !isLoading,
         ),
         const SizedBox(height: AppSpacing.x4),
-        AppTextField(
+        AuthInputField(
           key: const Key('login_password_field'),
-          controller: _passwordController,
           label: 'Password',
+          controller: _passwordController,
+          hint: 'Enter your password',
           errorText: _passwordError,
           obscureText: true,
           textInputAction: TextInputAction.done,
-          leading: const Icon(Icons.lock_outlined),
           onSubmitted: (_) => _submit(),
           enabled: !isLoading,
         ),
+        const SizedBox(height: AppSpacing.x2),
+        Align(
+          alignment: Alignment.centerRight,
+          child: GestureDetector(
+            onTap: () {},
+            child: const Text(
+              'Forgot password?',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gradientStart,
+              ),
+            ),
+          ),
+        ),
         const SizedBox(height: AppSpacing.x6),
-        AppButton(
-          label: 'Sign in',
+        GradientButton(
+          label: 'Sign In',
           onPressed: isLoading ? null : _submit,
           isLoading: isLoading,
           isFullWidth: true,
-          size: AppButtonSize.lg,
+        ),
+        const SizedBox(height: AppSpacing.x6),
+        const _OrDivider(),
+        const SizedBox(height: AppSpacing.x6),
+        Row(
+          children: [
+            Expanded(
+              child: _SocialButton(
+                label: 'Google',
+                icon: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4285F4),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                ),
+                onTap: () {},
+              ),
+            ),
+            const SizedBox(width: AppSpacing.x3),
+            Expanded(
+              child: _SocialButton(
+                label: 'Apple',
+                icon: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.neutral900,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                ),
+                onTap: () {},
+              ),
+            ),
+          ],
         ),
       ],
+    );
+  }
+}
+
+class _OrDivider extends StatelessWidget {
+  const _OrDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Expanded(child: Divider(color: AppColors.border, thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
+          child: Text(
+            'OR CONTINUE WITH',
+            style: AppTypography.labelSm.copyWith(color: AppColors.textDisabled),
+          ),
+        ),
+        const Expanded(child: Divider(color: AppColors.border, thickness: 1)),
+      ],
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  const _SocialButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final Widget icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 51,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: AppColors.border, width: 1.5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(width: AppSpacing.x2),
+            Text(
+              label,
+              style: AppTypography.labelMd.copyWith(color: AppColors.onSurface),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

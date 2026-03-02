@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/ui/atoms/app_button.dart';
-import '../../../../../core/ui/atoms/app_text_field.dart';
+import '../../../../../core/ui/atoms/gradient_button.dart';
 import '../../../../../core/ui/tokens/app_colors.dart';
 import '../../../../../core/ui/tokens/app_spacing.dart';
 import '../../../../../core/ui/tokens/app_typography.dart';
 import '../../../../../core/utils/password_strength.dart';
 import '../cubit/register_cubit.dart';
 import '../cubit/register_state.dart';
+import 'auth_input_field.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -53,9 +53,8 @@ class _RegisterFormState extends State<RegisterForm> {
   void _updatePasswordStrength() {
     final password = _passwordController.text;
     setState(() {
-      _passwordStrength = password.isEmpty
-          ? null
-          : PasswordStrengthCalculator.calculate(password);
+      _passwordStrength =
+          password.isEmpty ? null : PasswordStrengthCalculator.calculate(password);
     });
   }
 
@@ -116,8 +115,7 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   bool _isValidEmail(String email) {
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-    return emailRegex.hasMatch(email);
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email);
   }
 
   void _submit() {
@@ -138,59 +136,65 @@ class _RegisterFormState extends State<RegisterForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AppTextField(
-          key: const Key('register_firstName_field'),
-          controller: _firstNameController,
-          label: 'First Name',
-          hint: 'John',
-          errorText: _firstNameError,
-          textInputAction: TextInputAction.next,
-          leading: const Icon(Icons.person_outline),
-          enabled: !isLoading,
+        // Name row
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: AuthInputField(
+                key: const Key('register_firstName_field'),
+                label: 'First Name',
+                controller: _firstNameController,
+                hint: 'John',
+                errorText: _firstNameError,
+                textInputAction: TextInputAction.next,
+                enabled: !isLoading,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.x3),
+            Expanded(
+              child: AuthInputField(
+                key: const Key('register_lastName_field'),
+                label: 'Last Name',
+                controller: _lastNameController,
+                hint: 'Doe',
+                errorText: _lastNameError,
+                textInputAction: TextInputAction.next,
+                enabled: !isLoading,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: AppSpacing.x4),
-        AppTextField(
-          key: const Key('register_lastName_field'),
-          controller: _lastNameController,
-          label: 'Last Name',
-          hint: 'Doe',
-          errorText: _lastNameError,
-          textInputAction: TextInputAction.next,
-          leading: const Icon(Icons.person_outline),
-          enabled: !isLoading,
-        ),
-        const SizedBox(height: AppSpacing.x4),
-        AppTextField(
+        AuthInputField(
           key: const Key('register_username_field'),
-          controller: _usernameController,
           label: 'Username',
+          controller: _usernameController,
           hint: 'johndoe',
           errorText: _usernameError,
           textInputAction: TextInputAction.next,
-          leading: const Icon(Icons.alternate_email),
           enabled: !isLoading,
         ),
         const SizedBox(height: AppSpacing.x4),
-        AppTextField(
+        AuthInputField(
           key: const Key('register_email_field'),
-          controller: _emailController,
           label: 'Email',
-          hint: 'you@example.com',
+          controller: _emailController,
+          hint: 'your.email@example.com',
           errorText: _emailError,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          leading: const Icon(Icons.email_outlined),
           enabled: !isLoading,
         ),
         const SizedBox(height: AppSpacing.x4),
-        AppTextField(
+        AuthInputField(
           key: const Key('register_password_field'),
-          controller: _passwordController,
           label: 'Password',
+          controller: _passwordController,
+          hint: 'Min. 8 characters',
           errorText: _passwordError,
           obscureText: true,
           textInputAction: TextInputAction.next,
-          leading: const Icon(Icons.lock_outlined),
           enabled: !isLoading,
         ),
         if (_passwordStrength != null) ...[
@@ -198,24 +202,23 @@ class _RegisterFormState extends State<RegisterForm> {
           _PasswordStrengthIndicator(strength: _passwordStrength!),
         ],
         const SizedBox(height: AppSpacing.x4),
-        AppTextField(
+        AuthInputField(
           key: const Key('register_confirmPassword_field'),
-          controller: _confirmPasswordController,
           label: 'Confirm Password',
+          controller: _confirmPasswordController,
+          hint: 'Repeat your password',
           errorText: _confirmPasswordError,
           obscureText: true,
           textInputAction: TextInputAction.done,
-          leading: const Icon(Icons.lock_outlined),
           onSubmitted: (_) => _submit(),
           enabled: !isLoading,
         ),
         const SizedBox(height: AppSpacing.x6),
-        AppButton(
-          label: 'Sign up',
+        GradientButton(
+          label: 'Create Account',
           onPressed: isLoading ? null : _submit,
           isLoading: isLoading,
           isFullWidth: true,
-          size: AppButtonSize.lg,
         ),
       ],
     );
@@ -237,28 +240,23 @@ class _PasswordStrengthIndicator extends StatelessWidget {
       PasswordStrength.strong => 1.0,
     };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: AppColors.neutral200,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                  minHeight: 4,
-                ),
-              ),
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: AppColors.neutral200,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+              minHeight: 4,
             ),
-            const SizedBox(width: AppSpacing.x2),
-            Text(
-              label,
-              style: AppTypography.labelSm.copyWith(color: color),
-            ),
-          ],
+          ),
+        ),
+        const SizedBox(width: AppSpacing.x2),
+        Text(
+          label,
+          style: AppTypography.labelSm.copyWith(color: color),
         ),
       ],
     );
