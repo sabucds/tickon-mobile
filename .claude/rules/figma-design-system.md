@@ -220,6 +220,149 @@ AuthHeader(subtitle: 'Create your account')
 
 ---
 
+## Figma Component Inventory
+
+These components exist in the Figma file (`xFOXoRhMFaGNeXi8raLuvc`) and have corresponding Flutter widget targets. IMPORTANT: **When implementing any screen that uses these patterns, check for the existing Flutter widget first before building from scratch.**
+
+### Navigation
+
+#### `BottomNavBar` — target: `lib/core/ui/atoms/bottom_nav_bar.dart`
+- 4 tabs: Home, Explore, Tickets, Profile
+- Active tab: `primary500` top-bar indicator + bold label
+- Badge: gradient pill (e.g. unread ticket count)
+- Height: 64px · border-top: 1.5px `neutral200` / dark: `#2E2E2E`
+- Dark mode: `neutral800` background
+
+#### `AppBar` variants — target: `lib/core/ui/atoms/app_bar.dart`
+- **Greeting**: avatar (36px) + "Good morning, Name 👋" + notification bell
+- **Back+Title**: back icon-btn + centered title + optional trailing action
+- **Section**: left-aligned title + optional subtitle + trailing icon-btn
+- Icon buttons: 40×40px, radius 12, `neutral50` bg / `neutral200` border
+
+#### `SearchBar` — target: `lib/core/ui/atoms/search_bar.dart`
+- Height: 50px · radius: 14px
+- Default: search icon + placeholder + gradient filter button (32px)
+- Focused: `primary500` border + 3px ring, clear × icon replaces filter
+
+#### `CategoryChip` — target: `lib/core/ui/atoms/category_chip.dart`
+- Default: white bg, `neutral200` border, `neutral600` text
+- Active: `primary100` bg, `primary500` border + text
+- Gradient active: gradient bg, white text (use for "All" / selected filter)
+- Height: ~32px · `AppRadius.full` · padding: 8×16
+
+#### `SectionHeader` — target: `lib/core/ui/atoms/section_header.dart`
+- Title (`headingSm bold`) + optional "See all" gradient text link
+- Use between content sections on list/home screens
+
+---
+
+### Event Cards
+
+#### `EventCardFeatured` — target: `lib/features/events/presentation/widgets/event_card_featured.dart`
+- Width: 320px · image height: 180px · radius: 20px
+- Gradient overlay on image (transparent → black 75%)
+- Badge: status pill (trending/new/almost/sold-out) top-left
+- Save button: frosted glass circle top-right; filled red when saved
+- Footer: price tag (gradient text) + "Book Now" gradient button
+- Sold-out: `opacity 0.75`, greyed price + disabled button
+
+```dart
+EventCardFeatured(
+  event: event,
+  onTap: () => _openDetail(event),
+  onSave: () => _toggleSave(event),
+  isSaved: isSaved,
+)
+```
+
+#### `EventCardList` — target: `lib/features/events/presentation/widgets/event_card_list.dart`
+- Full-width · radius 16 · padding 14px · shadow `0 2 12 6%`
+- Left: 80×80 image (radius 12) OR date-badge widget
+- Right: category label (gradient text) + title + date + venue + price + attendee avatars
+- Badge: "You're going" pill when user has ticket
+
+```dart
+EventCardList(
+  event: event,
+  isAttending: isAttending,
+  onTap: () => _openDetail(event),
+)
+```
+
+#### `EventCardCompact` — target: `lib/features/events/presentation/widgets/event_card_compact.dart`
+- Width: 160px · image height: 90px · radius: 14px
+- For horizontal scroll grids (nearby, same category)
+- Price shown as gradient text; free = `success` green; sold-out = `neutral400`
+
+#### `DateBadge` — target: `lib/core/ui/atoms/date_badge.dart`
+- `primary100` bg · month (9px bold uppercase `primary500`) + day (18px bold)
+- Use in `EventCardList` when no image thumbnail is available
+
+#### `EventStatusBadge` — target: `lib/core/ui/atoms/event_status_badge.dart`
+- Variants: `trending` (gradient), `new` (success green), `almostSoldOut` (warning amber), `soldOut` (neutral), `booked` (success), `free` (blue)
+- Height: ~26px · `AppRadius.full` · 700 weight · fontSize 11–12px
+
+---
+
+### Booking Flow
+
+#### `TicketTypeRow` — target: `lib/features/booking/presentation/widgets/ticket_type_row.dart`
+- Full-width · radius 16 · border 1.5px
+- Default: `neutral200` border; selected: `primary500` border + faint `primary` tint bg
+- Left: ticket name + description + price (gradient text / green for free)
+- Right: quantity stepper (minus 32px `neutral100` / `primary100` when active; plus 32px gradient)
+- Disabled minus when qty = 0
+
+```dart
+TicketTypeRow(
+  ticket: ticketType,
+  quantity: qty,
+  onDecrement: _decrement,
+  onIncrement: _increment,
+)
+```
+
+#### `PriceSummaryCard` — target: `lib/features/booking/presentation/widgets/price_summary_card.dart`
+- Radius 20 · shadow `0 4 20 7%`
+- Line items: label + value rows; discount row uses `success` green
+- Footer: `neutral50` bg · total label + gradient total value (20px bold)
+
+#### `QRTicketCard` — target: `lib/features/booking/presentation/widgets/qr_ticket_card.dart`
+- Gradient header (event name, venue, date/time/seat row)
+- Perforated divider: dashed line + circle cutouts on edges
+- Body: QR code widget (dark bg) + holder name + ticket type + reference ID
+
+---
+
+### Utility / Feedback
+
+#### `EmptyState` — target: `lib/core/ui/atoms/empty_state.dart`
+- Illustration: 120px circle with gradient tint bg + emoji/icon
+- Title (`headingSm`) + description (`bodyMd textSecondary`) + optional CTA button
+- Variants: `noTickets`, `noResults`, `noSaved` (pass `emoji`, `title`, `description`, `ctaLabel`)
+
+```dart
+EmptyState(
+  emoji: '🎟️',
+  title: 'No tickets yet',
+  description: 'Explore what\'s happening near you.',
+  ctaLabel: 'Browse Events',
+  onCta: _browseEvents,
+)
+```
+
+#### `AppToast` — target: `lib/core/ui/atoms/app_toast.dart`
+- Radius 16 · shadow `0 8 32 16%` · elevated above bottom nav
+- Variants: `success`, `error`, `info`, `warning`
+- Icon: 36×36 radius 10; content: title (`bodyMd bold`) + description (`bodySm`)
+- Show via `ScaffoldMessenger` snackbar with custom widget, or an overlay
+
+#### `SkeletonLoader` — target: `lib/core/ui/atoms/skeleton_loader.dart`
+- Shimmer animation: `neutral200 → neutral100`, 1.5s cycle
+- Variants: `featuredCard`, `listCard`, `compactCard` — match dimensions of real cards exactly
+
+---
+
 ## Screen Patterns
 
 ### Splash Screen
